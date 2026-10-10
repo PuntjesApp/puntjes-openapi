@@ -16,7 +16,7 @@ Each version is a tag, such as `v1.2.0`. The number says what the change does to
 
 | The change | The version |
 |---|---|
-| Breaks an existing client: a removed field, a new required input | Major (`2.0.0`) |
+| Breaks an existing client: a removed endpoint, a removed field every response carries, a new required input | Major (`2.0.0`) |
 | Any other change to the API: a new endpoint, a field, a deprecation | Minor (`1.3.0`) |
 | Only a description or an example changes | Patch (`1.2.1`) |
 
