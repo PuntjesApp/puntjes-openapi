@@ -2,7 +2,7 @@
     "openapi": "3.1.0",
     "info": {
         "title": "Puntjes",
-        "version": "2.0.0",
+        "version": "2.1.0",
         "description": "Puntjes Loyalty API"
     },
     "servers": [
@@ -1176,9 +1176,16 @@
                     },
                     "500": {
                         "$ref": "#/components/responses/Error500"
+                    },
+                    "503": {
+                        "$ref": "#/components/responses/Error503"
                     }
                 },
                 "x-error-codes": [
+                    {
+                        "code": "APPLE_WALLET_UNAVAILABLE",
+                        "status": 503
+                    },
                     {
                         "code": "CUSTOMER_DEACTIVATED",
                         "status": 422
@@ -6623,6 +6630,16 @@
                         "status": 415
                     }
                 ]
+            },
+            "Error503": {
+                "description": "A service the request needs is not ready yet. Retry after the seconds in the Retry-After header.",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/ErrorResponse"
+                        }
+                    }
+                }
             },
             "Error405": {
                 "description": "The path exists, but not for this HTTP method.",

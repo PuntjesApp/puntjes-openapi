@@ -1,5 +1,12 @@
 # Changelog
 
+## v2.1.0 (2026-10-15)
+
+### API Changes
+
+#### GET /customers/{customer}/wallet-pass
+-  added the non-success response with the status `503`
+
 ## v2.0.0 (2026-10-12)
 
 ### API Changes
