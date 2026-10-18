@@ -2,7 +2,7 @@
     "openapi": "3.1.0",
     "info": {
         "title": "Puntjes",
-        "version": "2.1.0",
+        "version": "2.2.0",
         "description": "Puntjes Loyalty API"
     },
     "servers": [
@@ -40,6 +40,9 @@
         },
         {
             "name": "Me"
+        },
+        {
+            "name": "Branches"
         },
         {
             "name": "Health"
@@ -128,7 +131,6 @@
                     "Customers"
                 ],
                 "requestBody": {
-                    "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
@@ -221,7 +223,6 @@
                     }
                 ],
                 "requestBody": {
-                    "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
@@ -311,7 +312,6 @@
                     }
                 ],
                 "requestBody": {
-                    "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
@@ -482,7 +482,6 @@
                     }
                 ],
                 "requestBody": {
-                    "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
@@ -579,7 +578,6 @@
                     }
                 ],
                 "requestBody": {
-                    "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
@@ -1653,6 +1651,15 @@
                         }
                     }
                 ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/VerifyRedemptionData"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "200": {
                         "description": "",
@@ -1671,6 +1678,9 @@
                                 }
                             }
                         }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/Error400"
                     },
                     "401": {
                         "$ref": "#/components/responses/Error401"
@@ -1696,6 +1706,14 @@
                 },
                 "x-error-codes": [
                     {
+                        "code": "BRANCH_NOT_FOUND",
+                        "status": 422
+                    },
+                    {
+                        "code": "BRANCH_REQUIRED",
+                        "status": 422
+                    },
+                    {
                         "code": "CODE_ALREADY_USED",
                         "status": 422
                     },
@@ -1705,6 +1723,10 @@
                     },
                     {
                         "code": "CODE_EXPIRED",
+                        "status": 422
+                    },
+                    {
+                        "code": "IDEMPOTENCY_KEY_CONFLICT",
                         "status": 422
                     },
                     {
@@ -2225,7 +2247,6 @@
                     }
                 ],
                 "requestBody": {
-                    "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
@@ -2568,7 +2589,6 @@
                     }
                 ],
                 "requestBody": {
-                    "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
@@ -2752,6 +2772,49 @@
                                     "properties": {
                                         "data": {
                                             "$ref": "#/components/schemas/VendorBrandingData"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Error401"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/Error403"
+                    },
+                    "429": {
+                        "$ref": "#/components/responses/Error429"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/Error500"
+                    }
+                }
+            }
+        },
+        "/branches": {
+            "get": {
+                "operationId": "listBranches",
+                "tags": [
+                    "Branches"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/BranchReferenceData"
+                                            }
                                         }
                                     },
                                     "required": [
@@ -5260,6 +5323,16 @@
                                 "free_product": "#/components/schemas/FreeProductRedemptionData"
                             }
                         }
+                    },
+                    "branches": {
+                        "type": [
+                            "array",
+                            "null"
+                        ],
+                        "description": "The branches the reward has now; null means every branch.",
+                        "items": {
+                            "$ref": "#/components/schemas/BranchReferenceData"
+                        }
                     }
                 },
                 "required": [
@@ -5270,7 +5343,8 @@
                     "remaining_balance",
                     "redeemed_at",
                     "expires_at",
-                    "type_specific_data"
+                    "type_specific_data",
+                    "branches"
                 ],
                 "title": "RedemptionCreatedData"
             },
@@ -5339,6 +5413,16 @@
                                 "free_product": "#/components/schemas/FreeProductRedemptionData"
                             }
                         }
+                    },
+                    "branches": {
+                        "type": [
+                            "array",
+                            "null"
+                        ],
+                        "description": "The branches the reward has now; null means every branch.",
+                        "items": {
+                            "$ref": "#/components/schemas/BranchReferenceData"
+                        }
                     }
                 },
                 "required": [
@@ -5351,7 +5435,8 @@
                     "redeemed_at",
                     "verified_at",
                     "expires_at",
-                    "type_specific_data"
+                    "type_specific_data",
+                    "branches"
                 ],
                 "title": "RedemptionLookupData"
             },
@@ -5363,11 +5448,16 @@
                     },
                     "type": {
                         "type": "string"
+                    },
+                    "id": {
+                        "type": "integer",
+                        "description": "The reward's id, the one GET /rewards lists."
                     }
                 },
                 "required": [
                     "name",
-                    "type"
+                    "type",
+                    "id"
                 ],
                 "title": "RedemptionRewardData"
             },
@@ -5409,6 +5499,16 @@
                                 "free_product": "#/components/schemas/FreeProductRedemptionData"
                             }
                         }
+                    },
+                    "branches": {
+                        "type": [
+                            "array",
+                            "null"
+                        ],
+                        "description": "The branches the reward has now; null means every branch.",
+                        "items": {
+                            "$ref": "#/components/schemas/BranchReferenceData"
+                        }
                     }
                 },
                 "required": [
@@ -5418,7 +5518,8 @@
                     "reward",
                     "points_deducted",
                     "verified_at",
-                    "type_specific_data"
+                    "type_specific_data",
+                    "branches"
                 ],
                 "title": "RedemptionVerificationData"
             },
@@ -6216,13 +6317,24 @@
                             "string",
                             "null"
                         ]
+                    },
+                    "default_branch": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/BranchReferenceData"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
                     }
                 },
                 "required": [
                     "display_name",
                     "logo_url",
                     "brand_color_primary",
-                    "brand_color_accent"
+                    "brand_color_accent",
+                    "default_branch"
                 ],
                 "title": "VendorBrandingData"
             },
@@ -6243,6 +6355,24 @@
                     }
                 },
                 "title": "VerifyCampaignVoucherData"
+            },
+            "VerifyRedemptionData": {
+                "type": "object",
+                "properties": {
+                    "branch": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "idempotency_key": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    }
+                },
+                "title": "VerifyRedemptionData"
             },
             "VolumeBucketData": {
                 "type": "object",

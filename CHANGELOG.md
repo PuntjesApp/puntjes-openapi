@@ -1,5 +1,54 @@
 # Changelog
 
+## v2.2.0 (2026-10-18)
+
+### API Changes
+
+#### GET /branches
+-  endpoint added
+
+#### POST /customers
+-  request body became optional
+
+#### PATCH /customers/by-external-id/{externalId}
+-  request body became optional
+
+#### PUT /customers/by-external-id/{externalId}
+-  request body became optional
+
+#### POST /customers/by-external-id/{externalId}/send-card
+-  request body became optional
+
+#### GET /customers/{customer}/redemptions
+-  added the required property `data/data/items/branches` to the response with the `200` status
+-  added the required property `data/data/items/reward/id` to the response with the `200` status
+
+#### POST /customers/{customer}/send-card
+-  request body became optional
+
+#### GET /me
+-  added the required property `data/default_branch` to the response with the `200` status
+
+#### PATCH /products/{externalId}
+-  request body became optional
+
+#### POST /redemptions
+-  added the required property `data/branches` to the response with the `201` status
+-  added the required property `data/reward/id` to the response with the `201` status
+
+#### GET /redemptions/{code}
+-  added the required property `data/branches` to the response with the `200` status
+-  added the required property `data/reward/id` to the response with the `200` status
+
+#### POST /redemptions/{code}/verify
+-  added optional request body
+-  added the non-success response with the status `400`
+-  added the required property `data/branches` to the response with the `200` status
+-  added the required property `data/reward/id` to the response with the `200` status
+
+#### POST /vouchers/{code}/verify
+-  request body became optional
+
 ## v2.1.0 (2026-10-15)
 
 ### API Changes
