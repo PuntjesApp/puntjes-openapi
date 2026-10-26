@@ -2,7 +2,7 @@
     "openapi": "3.1.0",
     "info": {
         "title": "Puntjes",
-        "version": "2.2.0",
+        "version": "2.3.0",
         "description": "Puntjes Loyalty API"
     },
     "servers": [
@@ -462,6 +462,94 @@
                 ]
             }
         },
+        "/customers/{customer}/external-id": {
+            "put": {
+                "operationId": "changeCustomerExternalId",
+                "tags": [
+                    "Customers"
+                ],
+                "parameters": [
+                    {
+                        "name": "customer",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ChangeExternalIdData"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/CustomerDetailData"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/Error400"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Error401"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/Error403"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/Error404"
+                    },
+                    "409": {
+                        "$ref": "#/components/responses/Error409"
+                    },
+                    "415": {
+                        "$ref": "#/components/responses/Error415"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/Error422"
+                    },
+                    "429": {
+                        "$ref": "#/components/responses/Error429"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/Error500"
+                    }
+                },
+                "x-error-codes": [
+                    {
+                        "code": "CUSTOMER_NOT_FOUND",
+                        "status": 404
+                    },
+                    {
+                        "code": "EXTERNAL_ID_DUPLICATE",
+                        "status": 409
+                    }
+                ]
+            }
+        },
         "/customers/by-external-id/{externalId}/send-card": {
             "post": {
                 "operationId": "sendLoyaltyCardByExternalId",
@@ -712,6 +800,99 @@
                     {
                         "code": "CUSTOMER_NOT_FOUND",
                         "status": 404
+                    }
+                ]
+            }
+        },
+        "/customers/{customer}/merge": {
+            "post": {
+                "operationId": "mergeCustomers",
+                "tags": [
+                    "Customers"
+                ],
+                "parameters": [
+                    {
+                        "name": "customer",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/MergeCustomersApiData"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/CustomerDetailData"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/Error400"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Error401"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/Error403"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/Error404"
+                    },
+                    "415": {
+                        "$ref": "#/components/responses/Error415"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/Error422"
+                    },
+                    "429": {
+                        "$ref": "#/components/responses/Error429"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/Error500"
+                    }
+                },
+                "x-error-codes": [
+                    {
+                        "code": "CUSTOMER_DEACTIVATED",
+                        "status": 422
+                    },
+                    {
+                        "code": "CUSTOMER_NOT_FOUND",
+                        "status": 404
+                    },
+                    {
+                        "code": "FEATURE_NOT_ENABLED",
+                        "status": 403
+                    },
+                    {
+                        "code": "IDEMPOTENCY_KEY_CONFLICT",
+                        "status": 422
                     }
                 ]
             }
@@ -2663,6 +2844,10 @@
                         "status": 422
                     },
                     {
+                        "code": "VOUCHER_GROUP_REQUIRED",
+                        "status": 422
+                    },
+                    {
                         "code": "VOUCHER_NOT_FOUND",
                         "status": 404
                     }
@@ -2957,6 +3142,13 @@
                             "type": "integer"
                         }
                     },
+                    "customer_group_ids": {
+                        "type": "array",
+                        "description": "The groups this campaign is for. Absent or empty means everyone.",
+                        "items": {
+                            "type": "integer"
+                        }
+                    },
                     "type": {
                         "type": "string",
                         "description": "Which shape this is.",
@@ -3203,6 +3395,13 @@
                             "string",
                             "null"
                         ]
+                    },
+                    "customer_groups": {
+                        "type": "array",
+                        "description": "Who the campaign is for. Empty means every customer.",
+                        "items": {
+                            "$ref": "#/components/schemas/CustomerGroupReferenceData"
+                        }
                     }
                 },
                 "required": [
@@ -3222,7 +3421,8 @@
                     "min_transaction_amount",
                     "branches",
                     "created_at",
-                    "updated_at"
+                    "updated_at",
+                    "customer_groups"
                 ],
                 "title": "CampaignListData"
             },
@@ -3267,7 +3467,7 @@
                         "type": "string"
                     },
                     "discount": {
-                        "description": "How much comes off, for a discount bon. Its `type` says which shape this is.",
+                        "description": "How much comes off, for a discount voucher. Its `type` says which shape this is.",
                         "oneOf": [
                             {
                                 "$ref": "#/components/schemas/VoucherPercentageDiscountData"
@@ -3298,7 +3498,7 @@
                             "string",
                             "null"
                         ],
-                        "description": "When the bon was spent, or null while it is not."
+                        "description": "When the voucher was spent, or null while it is not."
                     },
                     "campaign_id": {
                         "type": "integer"
@@ -3311,7 +3511,7 @@
                             "array",
                             "null"
                         ],
-                        "description": "What to hand over, for a free-product bon.",
+                        "description": "What to hand over, for a free-product voucher.",
                         "items": {
                             "$ref": "#/components/schemas/VoucherGiftProductData"
                         }
@@ -3319,6 +3519,17 @@
                     "status": {
                         "type": "string",
                         "description": "`valid`, `used` or `expired`."
+                    },
+                    "customer_groups": {
+                        "type": "array",
+                        "description": "Groups that may spend it; empty means every customer.",
+                        "items": {
+                            "$ref": "#/components/schemas/CustomerGroupReferenceData"
+                        }
+                    },
+                    "blocked_by_group": {
+                        "type": "boolean",
+                        "description": "Only true when `status` is `valid` and the customer is a member of none of its customer groups."
                     }
                 },
                 "required": [
@@ -3329,7 +3540,9 @@
                     "campaign_id",
                     "kind",
                     "products",
-                    "status"
+                    "status",
+                    "customer_groups",
+                    "blocked_by_group"
                 ],
                 "title": "CampaignVoucherLookupData"
             },
@@ -3340,7 +3553,7 @@
                         "type": "string"
                     },
                     "discount": {
-                        "description": "How much comes off, for a discount bon. Its `type` says which shape this is.",
+                        "description": "How much comes off, for a discount voucher. Its `type` says which shape this is.",
                         "oneOf": [
                             {
                                 "$ref": "#/components/schemas/VoucherPercentageDiscountData"
@@ -3380,7 +3593,7 @@
                             "array",
                             "null"
                         ],
-                        "description": "What to hand over, for a free-product bon.",
+                        "description": "What to hand over, for a free-product voucher.",
                         "items": {
                             "$ref": "#/components/schemas/VoucherGiftProductData"
                         }
@@ -3417,6 +3630,18 @@
                     "category"
                 ],
                 "title": "CategoryRevenueData"
+            },
+            "ChangeExternalIdData": {
+                "type": "object",
+                "properties": {
+                    "external_id": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "external_id"
+                ],
+                "title": "ChangeExternalIdData"
             },
             "CommerceStatisticsData": {
                 "type": "object",
@@ -3520,6 +3745,12 @@
                         "type": "array",
                         "items": {
                             "$ref": "#/components/schemas/CreateIdentifierData"
+                        }
+                    },
+                    "groups": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/CustomerGroupReferenceData"
                         }
                     }
                 },
@@ -3922,6 +4153,13 @@
                             "string",
                             "null"
                         ]
+                    },
+                    "groups": {
+                        "type": "array",
+                        "description": "The customer's groups, sorted by name, then by external_id.",
+                        "items": {
+                            "$ref": "#/components/schemas/CustomerGroupReferenceData"
+                        }
                     }
                 },
                 "required": [
@@ -3948,7 +4186,8 @@
                     "deactivated_at",
                     "anonymized_at",
                     "created_at",
-                    "updated_at"
+                    "updated_at",
+                    "groups"
                 ],
                 "title": "CustomerData"
             },
@@ -4093,6 +4332,20 @@
                     "is_deactivated": {
                         "type": "boolean",
                         "description": "`true` for a deactivated customer; the key is absent for any other customer."
+                    },
+                    "merged_into_customer_id": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "description": "The account a merge moved this closed account into, else `null`."
+                    },
+                    "groups": {
+                        "type": "array",
+                        "description": "The customer's groups, sorted by name, then by external_id.",
+                        "items": {
+                            "$ref": "#/components/schemas/CustomerGroupReferenceData"
+                        }
                     }
                 },
                 "required": [
@@ -4119,9 +4372,27 @@
                     "deactivated_at",
                     "anonymized_at",
                     "created_at",
-                    "updated_at"
+                    "updated_at",
+                    "merged_into_customer_id",
+                    "groups"
                 ],
                 "title": "CustomerDetailData"
+            },
+            "CustomerGroupReferenceData": {
+                "type": "object",
+                "properties": {
+                    "external_id": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "external_id",
+                    "name"
+                ],
+                "title": "CustomerGroupReferenceData"
             },
             "CustomerIdentifierData": {
                 "type": "object",
@@ -4303,6 +4574,20 @@
                     "is_deactivated": {
                         "type": "boolean",
                         "description": "`true` for a deactivated customer; the key is absent for any other customer."
+                    },
+                    "merged_into_customer_id": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "description": "The account a merge moved this closed account into, else `null`."
+                    },
+                    "groups": {
+                        "type": "array",
+                        "description": "The customer's groups, sorted by name, then by external_id.",
+                        "items": {
+                            "$ref": "#/components/schemas/CustomerGroupReferenceData"
+                        }
                     }
                 },
                 "required": [
@@ -4330,7 +4615,9 @@
                     "anonymized_at",
                     "created_at",
                     "updated_at",
-                    "wallet_balance"
+                    "wallet_balance",
+                    "merged_into_customer_id",
+                    "groups"
                 ],
                 "title": "CustomerLookupData"
             },
@@ -4363,7 +4650,7 @@
                         "type": "string"
                     },
                     "discount": {
-                        "description": "How much comes off, for a discount bon. Its `type` says which shape this is.",
+                        "description": "How much comes off, for a discount voucher. Its `type` says which shape this is.",
                         "oneOf": [
                             {
                                 "$ref": "#/components/schemas/VoucherPercentageDiscountData"
@@ -4388,7 +4675,7 @@
                             "array",
                             "null"
                         ],
-                        "description": "What to hand over, for a free-product bon.",
+                        "description": "What to hand over, for a free-product voucher.",
                         "items": {
                             "$ref": "#/components/schemas/VoucherGiftProductData"
                         }
@@ -4398,14 +4685,14 @@
                             "string",
                             "null"
                         ],
-                        "description": "The last day the bon can be spent, or null when it does not run out."
+                        "description": "The last day the voucher can be spent, or null when it does not run out."
                     },
                     "branches": {
                         "type": [
                             "array",
                             "null"
                         ],
-                        "description": "The branches that take the bon; null means every branch.",
+                        "description": "The branches that take the voucher; null means every branch.",
                         "items": {
                             "$ref": "#/components/schemas/BranchReferenceData"
                         }
@@ -4969,6 +5256,29 @@
                 },
                 "title": "LoyaltyStatisticsData"
             },
+            "MergeCustomersApiData": {
+                "type": "object",
+                "properties": {
+                    "source": {
+                        "type": "integer",
+                        "description": "Id of the closed account; its rows go to the kept account, its points too if `add_points`."
+                    },
+                    "add_points": {
+                        "type": "boolean",
+                        "description": "`true` adds the points of the closed account to the kept account; `false` drops them."
+                    },
+                    "idempotency_key": {
+                        "type": "string",
+                        "description": "Max 255 characters; the same request again answers 200, another is refused."
+                    }
+                },
+                "required": [
+                    "source",
+                    "add_points",
+                    "idempotency_key"
+                ],
+                "title": "MergeCustomersApiData"
+            },
             "MomentCampaignConfigData": {
                 "type": "object",
                 "properties": {
@@ -4997,6 +5307,13 @@
                     "branch_ids": {
                         "type": "array",
                         "description": "The branches this campaign runs in. Absent or empty means all of them.",
+                        "items": {
+                            "type": "integer"
+                        }
+                    },
+                    "customer_group_ids": {
+                        "type": "array",
+                        "description": "The groups this campaign is for. Absent or empty means everyone.",
                         "items": {
                             "type": "integer"
                         }
@@ -5054,6 +5371,13 @@
                     "branch_ids": {
                         "type": "array",
                         "description": "The branches this campaign runs in. Absent or empty means all of them.",
+                        "items": {
+                            "type": "integer"
+                        }
+                    },
+                    "customer_group_ids": {
+                        "type": "array",
+                        "description": "The groups this campaign is for. Absent or empty means everyone.",
                         "items": {
                             "type": "integer"
                         }
@@ -5992,6 +6316,13 @@
                             "type": "integer"
                         }
                     },
+                    "customer_group_ids": {
+                        "type": "array",
+                        "description": "The groups this campaign is for. Absent or empty means everyone.",
+                        "items": {
+                            "type": "integer"
+                        }
+                    },
                     "type": {
                         "type": "string",
                         "description": "Which shape this is.",
@@ -6179,6 +6510,12 @@
                             "string",
                             "null"
                         ]
+                    },
+                    "groups": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/CustomerGroupReferenceData"
+                        }
                     }
                 },
                 "title": "UpdateCustomerData"
@@ -6444,7 +6781,7 @@
                     },
                     "name": {
                         "type": "string",
-                        "description": "The product name as it was when the bon was issued."
+                        "description": "The product name as it was when the voucher was issued."
                     },
                     "quantity": {
                         "type": "integer",
@@ -6455,7 +6792,7 @@
                             "string",
                             "null"
                         ],
-                        "description": "The item number when the bon was issued, or null when it had none."
+                        "description": "The item number when the voucher was issued, or null when it had none."
                     }
                 },
                 "required": [
@@ -6574,6 +6911,13 @@
                     "branch_ids": {
                         "type": "array",
                         "description": "The branches this campaign runs in. Absent or empty means all of them.",
+                        "items": {
+                            "type": "integer"
+                        }
+                    },
+                    "customer_group_ids": {
+                        "type": "array",
+                        "description": "The groups this campaign is for. Absent or empty means everyone.",
                         "items": {
                             "type": "integer"
                         }

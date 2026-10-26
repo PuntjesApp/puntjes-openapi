@@ -1,5 +1,50 @@
 # Changelog
 
+## v2.3.0 (2026-10-26)
+
+### API Changes
+
+#### GET /campaigns
+-  added the optional property `data/data/items/config/oneOf[subschema #1: TransactionCampaignConfigData]/customer_group_ids` to the response with the `200` status
+-  added the optional property `data/data/items/config/oneOf[subschema #2: MomentCampaignConfigData]/customer_group_ids` to the response with the `200` status
+-  added the optional property `data/data/items/config/oneOf[subschema #3: NthPurchaseCampaignConfigData]/customer_group_ids` to the response with the `200` status
+-  added the optional property `data/data/items/config/oneOf[subschema #4: AnniversaryCampaignConfigData]/customer_group_ids` to the response with the `200` status
+-  added the optional property `data/data/items/config/oneOf[subschema #5: WinBackCampaignConfigData]/customer_group_ids` to the response with the `200` status
+-  added the required property `data/data/items/customer_groups` to the response with the `200` status
+
+#### POST /customers
+-  added the new optional request property `groups`
+-  added the required property `data/groups` to the response with the `201` status
+
+#### PATCH /customers/by-external-id/{externalId}
+-  added the new optional request property `groups`
+-  added the required property `data/groups` to the response with the `200` status
+
+#### PUT /customers/by-external-id/{externalId}
+-  added the new optional request property `groups`
+-  added the required property `data/groups` to the response with the `200` status
+
+#### POST /customers/link-external-id
+-  added the required property `data/groups` to the response with the `200` status
+
+#### GET /customers/lookup
+-  added the required property `data/groups` to the response with the `200` status
+-  added the required property `data/merged_into_customer_id` to the response with the `200` status
+
+#### GET /customers/{customer}
+-  added the required property `data/groups` to the response with the `200` status
+-  added the required property `data/merged_into_customer_id` to the response with the `200` status
+
+#### PUT /customers/{customer}/external-id
+-  endpoint added
+
+#### POST /customers/{customer}/merge
+-  endpoint added
+
+#### GET /vouchers/{code}
+-  added the required property `data/blocked_by_group` to the response with the `200` status
+-  added the required property `data/customer_groups` to the response with the `200` status
+
 ## v2.2.0 (2026-10-18)
 
 ### API Changes
