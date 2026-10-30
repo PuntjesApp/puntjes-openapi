@@ -1,5 +1,21 @@
 # Changelog
 
+## v2.4.0 (2026-10-30)
+
+### API Changes
+
+#### DELETE /client
+-  endpoint added
+
+#### POST /client/secret
+-  endpoint added
+
+#### POST /partner/clients
+-  endpoint added
+
+### Components
+-  the component security scheme `partnerAuthorizationCode` was added
+
 ## v2.3.0 (2026-10-26)
 
 ### API Changes

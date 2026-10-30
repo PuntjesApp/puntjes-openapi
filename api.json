@@ -2,7 +2,7 @@
     "openapi": "3.1.0",
     "info": {
         "title": "Puntjes",
-        "version": "2.3.0",
+        "version": "2.4.0",
         "description": "Puntjes Loyalty API"
     },
     "servers": [
@@ -43,6 +43,9 @@
         },
         {
             "name": "Branches"
+        },
+        {
+            "name": "Partner"
         },
         {
             "name": "Health"
@@ -3024,6 +3027,214 @@
                 }
             }
         },
+        "/partner/clients": {
+            "post": {
+                "operationId": "createPartnerApiClient",
+                "tags": [
+                    "Partner"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreatePartnerApiClientData"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/PartnerApiClientData"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/Error400"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Error401"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/Error403"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/Error404"
+                    },
+                    "415": {
+                        "$ref": "#/components/responses/Error415"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/Error422"
+                    },
+                    "429": {
+                        "$ref": "#/components/responses/Error429"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/Error500"
+                    }
+                },
+                "security": [
+                    {
+                        "partnerAuthorizationCode": []
+                    }
+                ],
+                "x-error-codes": [
+                    {
+                        "code": "BRANCH_INACTIVE",
+                        "status": 422
+                    },
+                    {
+                        "code": "CLIENT_LIMIT_REACHED",
+                        "status": 422
+                    },
+                    {
+                        "code": "CONNECTION_EXPIRED",
+                        "status": 422
+                    },
+                    {
+                        "code": "CONNECTION_NOT_FOUND",
+                        "status": 404
+                    }
+                ]
+            }
+        },
+        "/client/secret": {
+            "post": {
+                "operationId": "rotateClientSecret",
+                "tags": [
+                    "Partner"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ClientSecretData"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/NewClientSecretData"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/Error400"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Error401"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/Error403"
+                    },
+                    "415": {
+                        "$ref": "#/components/responses/Error415"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/Error422"
+                    },
+                    "429": {
+                        "$ref": "#/components/responses/Error429"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/Error500"
+                    }
+                },
+                "x-error-codes": [
+                    {
+                        "code": "CLIENT_NOT_PARTNER_MADE",
+                        "status": 403
+                    },
+                    {
+                        "code": "INVALID_CLIENT_SECRET",
+                        "status": 401
+                    }
+                ]
+            }
+        },
+        "/client": {
+            "delete": {
+                "operationId": "deleteClient",
+                "tags": [
+                    "Partner"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ClientSecretData"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": ""
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/Error400"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Error401"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/Error403"
+                    },
+                    "415": {
+                        "$ref": "#/components/responses/Error415"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/Error422"
+                    },
+                    "429": {
+                        "$ref": "#/components/responses/Error429"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/Error500"
+                    }
+                },
+                "x-error-codes": [
+                    {
+                        "code": "CLIENT_NOT_PARTNER_MADE",
+                        "status": 403
+                    },
+                    {
+                        "code": "INVALID_CLIENT_SECRET",
+                        "status": 401
+                    }
+                ]
+            }
+        },
         "/health": {
             "get": {
                 "operationId": "checkHealth",
@@ -3068,6 +3279,16 @@
     },
     "components": {
         "securitySchemes": {
+            "partnerAuthorizationCode": {
+                "type": "oauth2",
+                "flows": {
+                    "authorizationCode": {
+                        "authorizationUrl": "/oauth/authorize",
+                        "tokenUrl": "/oauth/token",
+                        "scopes": {}
+                    }
+                }
+            },
             "oauth2": {
                 "type": "oauth2",
                 "flows": {
@@ -3643,6 +3864,19 @@
                 ],
                 "title": "ChangeExternalIdData"
             },
+            "ClientSecretData": {
+                "type": "object",
+                "properties": {
+                    "client_secret": {
+                        "type": "string",
+                        "description": "The current `client_secret` of this client, or the old one in its 60 minutes."
+                    }
+                },
+                "required": [
+                    "client_secret"
+                ],
+                "title": "ClientSecretData"
+            },
             "CommerceStatisticsData": {
                 "type": "object",
                 "properties": {
@@ -3778,6 +4012,24 @@
                     "value"
                 ],
                 "title": "CreateIdentifierData"
+            },
+            "CreatePartnerApiClientData": {
+                "type": "object",
+                "properties": {
+                    "connection": {
+                        "type": "string",
+                        "description": "The `connection` handle the partner got on its redirect URI after the admin allowed."
+                    },
+                    "label": {
+                        "type": "string",
+                        "description": "The name of the new client, as the vendor sees it under API clients."
+                    }
+                },
+                "required": [
+                    "connection",
+                    "label"
+                ],
+                "title": "CreatePartnerApiClientData"
             },
             "CreateProductData": {
                 "type": "object",
@@ -5332,6 +5584,24 @@
                 ],
                 "title": "MomentCampaignConfigData"
             },
+            "NewClientSecretData": {
+                "type": "object",
+                "properties": {
+                    "client_id": {
+                        "type": "string",
+                        "description": "The `client_id` for `POST /oauth/token`. It does not change."
+                    },
+                    "client_secret": {
+                        "type": "string",
+                        "description": "The new `client_secret` for `POST /oauth/token`."
+                    }
+                },
+                "required": [
+                    "client_id",
+                    "client_secret"
+                ],
+                "title": "NewClientSecretData"
+            },
             "NthPurchaseCampaignConfigData": {
                 "type": "object",
                 "properties": {
@@ -5456,6 +5726,52 @@
                     "total"
                 ],
                 "title": "PaginationMeta"
+            },
+            "PartnerApiClientData": {
+                "type": "object",
+                "properties": {
+                    "client_id": {
+                        "type": "string",
+                        "description": "The `client_id` for `POST /oauth/token`."
+                    },
+                    "client_secret": {
+                        "type": "string",
+                        "description": "The `client_secret` for `POST /oauth/token`."
+                    },
+                    "vendor": {
+                        "type": "object",
+                        "description": "The vendor that allowed the connection.",
+                        "properties": {
+                            "id": {
+                                "type": "integer"
+                            },
+                            "name": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "id",
+                            "name"
+                        ]
+                    },
+                    "branch": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/BranchReferenceData"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    }
+                },
+                "required": [
+                    "client_id",
+                    "client_secret",
+                    "vendor",
+                    "branch"
+                ],
+                "title": "PartnerApiClientData"
             },
             "PercentageDiscountData": {
                 "type": "object",
@@ -6959,6 +7275,22 @@
                     }
                 ]
             },
+            "Error400": {
+                "description": "The request is missing something the API needs before it can act.",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/ErrorResponse"
+                        }
+                    }
+                },
+                "x-error-codes": [
+                    {
+                        "code": "INVALID_JSON",
+                        "status": 400
+                    }
+                ]
+            },
             "Error401": {
                 "description": "The credential is missing, malformed, or not accepted.",
                 "content": {
@@ -7015,22 +7347,6 @@
                     }
                 ]
             },
-            "Error429": {
-                "description": "Too many requests. `x-error-codes` names the limit; not every one of them clears by waiting.",
-                "content": {
-                    "application/json": {
-                        "schema": {
-                            "$ref": "#/components/schemas/ErrorResponse"
-                        }
-                    }
-                },
-                "x-error-codes": [
-                    {
-                        "code": "RATE_LIMITED",
-                        "status": 429
-                    }
-                ]
-            },
             "Error404": {
                 "description": "The route, or the record it names, does not exist.",
                 "content": {
@@ -7044,6 +7360,22 @@
                     {
                         "code": "ROUTE_NOT_FOUND",
                         "status": 404
+                    }
+                ]
+            },
+            "Error415": {
+                "description": "The body is in a format the API cannot read. Send it as JSON, or as a form.",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/ErrorResponse"
+                        }
+                    }
+                },
+                "x-error-codes": [
+                    {
+                        "code": "UNSUPPORTED_MEDIA_TYPE",
+                        "status": 415
                     }
                 ]
             },
@@ -7063,8 +7395,8 @@
                     }
                 ]
             },
-            "Error400": {
-                "description": "The request is missing something the API needs before it can act.",
+            "Error429": {
+                "description": "Too many requests. `x-error-codes` names the limit; not every one of them clears by waiting.",
                 "content": {
                     "application/json": {
                         "schema": {
@@ -7074,8 +7406,8 @@
                 },
                 "x-error-codes": [
                     {
-                        "code": "INVALID_JSON",
-                        "status": 400
+                        "code": "RATE_LIMITED",
+                        "status": 429
                     }
                 ]
             },
@@ -7088,22 +7420,6 @@
                         }
                     }
                 }
-            },
-            "Error415": {
-                "description": "The body is in a format the API cannot read. Send it as JSON, or as a form.",
-                "content": {
-                    "application/json": {
-                        "schema": {
-                            "$ref": "#/components/schemas/ErrorResponse"
-                        }
-                    }
-                },
-                "x-error-codes": [
-                    {
-                        "code": "UNSUPPORTED_MEDIA_TYPE",
-                        "status": 415
-                    }
-                ]
             },
             "Error503": {
                 "description": "A service the request needs is not ready yet. Retry after the seconds in the Retry-After header.",
